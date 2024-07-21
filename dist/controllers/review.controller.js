@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const { Mongoose, default: mongoose } = require("mongoose");
 const review_model_1 = __importDefault(require("../models/review.model"));
 async function getReviews(req, res) {
-    console.log(1);
     let page = parseInt(req.query.page) || 1;
     const { business } = req.body || "";
     const { stars } = req.query || "";

@@ -24,8 +24,6 @@ interface Review {
 }
 
 async function getReviews(req: ReviewsReq, res: Response) {
-  console.log(1);
-
   let page = parseInt(req.query.page) || 1;
   const { business } = req.body || "";
   const { stars } = req.query || "";
