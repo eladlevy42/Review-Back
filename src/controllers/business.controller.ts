@@ -44,4 +44,5 @@ async function createBusiness(req: requestCreateBusiness, res: Response) {
     return res.status(400).json({ error: "Create new Business failed" });
   }
 }
+
 module.exports = { getBusiness, createBusiness };
