@@ -18,7 +18,6 @@ function verifyToken(req, res, next) {
         return res.status(401).json({ error: "Access denied" });
     }
     try {
-        console.log(token);
         const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET); // Verify token
         console.log(decoded.userId);
         req.userId = decoded.userId; // Add userId to request object
