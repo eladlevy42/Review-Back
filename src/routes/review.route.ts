@@ -5,7 +5,6 @@ const { verifyUser, verifyToken } = require("../middleware/auth.middleware");
 const {
   getReviews,
   createReview,
-  toggleLike,
 } = require("../controllers/review.controller");
 
 type Middleware = (req: Request, res: Response, next: NextFunction) => void;
@@ -23,11 +22,11 @@ type RequestHandler = (
 // Type assertions for your imported functions
 const typedGetReviews = getReviews as RequestHandler;
 const typedCreateReview = createReview as RequestHandler;
-const typedToggleLike = toggleLike as RequestHandler;
+// const typedToggleLike = toggleLike as RequestHandler;
 const typedVerifyUser = verifyUser as RequestHandler;
 
 router.get("/", typedGetReviews);
-router.post("/", typedVerifyToken, typedVerifyUser, typedCreateReview);
-router.put("/", typedVerifyToken, typedVerifyUser, typedToggleLike);
+router.post("/", typedVerifyToken, typedCreateReview);
+// router.put("/", typedVerifyToken, typedVerifyUser, typedToggleLike);
 
 module.exports = router;
