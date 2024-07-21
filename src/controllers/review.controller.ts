@@ -16,9 +16,7 @@ interface AddReviewReq extends Request {
   userId: String;
   body: Review;
 }
-interface reviewLikeRequest extends Request {
-  body: Review;
-}
+
 interface Review {
   _id: string;
   user: String;
@@ -27,6 +25,7 @@ interface Review {
   content: String;
   likes: [String];
 }
+
 async function getReviews(req: ReviewsReq, res: Response) {
   let page = parseInt(req.query.page) || 1;
   const { business } = req.body || "";

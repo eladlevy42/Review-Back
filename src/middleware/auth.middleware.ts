@@ -2,8 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import Review from "../models/review.model";
 import mongoose from "mongoose";
-
-const JWT_SECRET = "your_jwt_secret"; // Replace with your actual secret
+const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
 
 interface AuthRequest extends Request {
   userId?: string;
@@ -28,10 +27,15 @@ function verifyToken(
   }
 
   try {
+    console.log(token);
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string }; // Verify token
+    console.log(decoded.userId);
+
     req.userId = decoded.userId; // Add userId to request object
     next(); // Call next middleware
-  } catch (error) {
+  } catch (error: any) {
+    console.log(error.message);
+
     return res.status(401).json({ error: "Invalid token" });
   }
 }

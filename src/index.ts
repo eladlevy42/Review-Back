@@ -21,16 +21,9 @@ connectDB();
 const reviewRoutes = require("./routes/review.route");
 // const userRoutes = require("./routes/user.route");
 const authRoutes = require("./routes/auth.route");
-const { verifyToken } = require("./middleware/auth.middleware");
-
-// Type for middleware
-type Middleware = (req: Request, res: Response, next: NextFunction) => void;
-
-// Type assertion for verifyToken
-const typedVerifyToken = verifyToken as Middleware;
 
 // Apply routes
-app.use("/api/review", typedVerifyToken, reviewRoutes);
+app.use("/api/review", reviewRoutes);
 app.use("/api/auth", authRoutes);
 // app.use("/api/user", typedVerifyToken, userRoutes);
 app.use(express.static("public"));
