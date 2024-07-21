@@ -12,10 +12,10 @@ const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
 const SALT_ROUNDS = 10;
 async function register(req, res) {
     try {
-        const { username, password, email } = req.body;
+        const { fullName, password, email } = req.body;
         const hashedPassword = await bcryptjs_1.default.hash(password, SALT_ROUNDS);
         const user = new user_model_1.default({
-            username,
+            fullName,
             email,
             password: hashedPassword,
         });
@@ -24,19 +24,22 @@ async function register(req, res) {
     }
     catch (err) {
         if (err.code === 11000) {
-            console.log("Username already exists");
+            console.log("Email already exists");
             return res.status(400).json({ error: "User already exists" });
         }
+        console.log(err.message);
         res.status(500).json({ error: "Registration failed" });
     }
 }
 async function login(req, res) {
     try {
-        const { username, password } = req.body;
-        const user = (await user_model_1.default.findOne({ username }));
+        const { email, password } = req.body;
+        console.log(email);
+        const user = await user_model_1.default.findOne({ email });
+        console.log(user);
         if (!user) {
-            console.log("No registered username");
-            return res.status(401).json({ error: "No registered username" });
+            console.log("No registered email");
+            return res.status(401).json({ error: "No registered email" });
         }
         const isPasswordMatch = await bcryptjs_1.default.compare(password, user.password);
         if (!isPasswordMatch) {
