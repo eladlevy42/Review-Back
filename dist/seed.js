@@ -16,6 +16,19 @@ const seedDatabase = async () => {
     try {
         await mongoose_1.default.connect(mongoURI);
         console.log("MongoDB connected!");
+        // Drop the index on the username field if it exists
+        try {
+            await mongoose_1.default.connection.collection("users").dropIndex("username_1");
+            console.log("Dropped index on username field.");
+        }
+        catch (error) {
+            if (error.codeName === "IndexNotFound") {
+                console.log("Index on username field not found.");
+            }
+            else {
+                throw error;
+            }
+        }
         // Clear existing data
         await business_model_1.default.deleteMany({});
         await review_model_1.default.deleteMany({});
@@ -23,37 +36,37 @@ const seedDatabase = async () => {
         // Create users
         const userData = [
             {
-                username: "john_doe",
+                fullName: "John Doe",
                 email: "john@example.com",
                 password: "password123",
             },
             {
-                username: "jane_doe",
+                fullName: "Jane Doe",
                 email: "jane@example.com",
                 password: "password123",
             },
             {
-                username: "sam_smith",
+                fullName: "Sam Smith",
                 email: "sam@example.com",
                 password: "password123",
             },
             {
-                username: "lisa_jones",
+                fullName: "Lisa Jones",
                 email: "lisa@example.com",
                 password: "password123",
             },
             {
-                username: "michael_brown",
+                fullName: "Michael Brown",
                 email: "michael@example.com",
                 password: "password123",
             },
             {
-                username: "emma_wilson",
+                fullName: "Emma Wilson",
                 email: "emma@example.com",
                 password: "password123",
             },
             {
-                username: "oliver_taylor",
+                fullName: "Oliver Taylor",
                 email: "oliver@example.com",
                 password: "password123",
             },
@@ -65,70 +78,75 @@ const seedDatabase = async () => {
         const createdUsers = await user_model_1.default.insertMany(users);
         // Save user passwords before hashing
         const plainPasswords = userData.map((user) => ({
-            username: user.username,
+            email: user.email,
             password: user.password,
         }));
         // Create businesses
         const businesses = [
             {
-                name: "Tech Haven",
-                description: "Best place for tech gadgets",
+                name: "Starbucks",
+                description: "Coffeehouse chain known for its signature roasts, light bites and WiFi availability.",
+                category: "Food & Drink",
+            },
+            {
+                name: "Best Buy",
+                description: "Chain retailer with a large array of brand-name electronics, computers, appliances & more.",
                 category: "Electronics",
             },
             {
-                name: "Gourmet Kitchen",
-                description: "Delicious gourmet meals",
-                category: "Food",
-            },
-            {
-                name: "Book Worm",
-                description: "A paradise for book lovers",
+                name: "Barnes & Noble",
+                description: "Bookseller stocking housewares, plus a range of books, eBooks, DVDs & magazines.",
                 category: "Books",
             },
             {
-                name: "Fit Life",
-                description: "Your fitness partner",
-                category: "Health",
+                name: "Planet Fitness",
+                description: "Gym offering cardio & strength equipment, plus fitness training & exercise classes.",
+                category: "Health & Fitness",
             },
             {
-                name: "Style Street",
-                description: "Latest fashion trends",
+                name: "H&M",
+                description: "Retailer known for its trendy, affordable apparel & accessories for men, women & kids.",
                 category: "Fashion",
             },
             {
-                name: "Auto Pro",
-                description: "Reliable car services",
+                name: "Jiffy Lube",
+                description: "Oil change service offering preventive auto maintenance & vehicle inspections.",
                 category: "Automotive",
             },
             {
-                name: "Pet Care",
-                description: "Everything for your pet",
+                name: "Petco",
+                description: "Pet supplies, pet food, and pet products.",
                 category: "Pets",
             },
             {
-                name: "Green Thumb",
-                description: "Gardening supplies and advice",
-                category: "Home",
+                name: "Lowe's",
+                description: "Home improvement retailer with a wide range of products, including appliances & tools.",
+                category: "Home Improvement",
             },
             {
-                name: "Adventure Sports",
-                description: "Gear for adventure sports",
-                category: "Sports",
+                name: "REI",
+                description: "Outdoor gear and apparel store offering rental equipment and adventure trips.",
+                category: "Sports & Outdoors",
             },
             {
-                name: "Beauty Bliss",
-                description: "Your beauty essentials",
+                name: "Sephora",
+                description: "Chain offering cosmetics, skincare, body, fragrance & haircare products.",
                 category: "Beauty",
             },
             {
-                name: "Home Comfort",
-                description: "Quality home furnishings",
+                name: "IKEA",
+                description: "Furniture store offering a wide variety of modern furniture, kitchen appliances & home accessories.",
                 category: "Home",
             },
             {
-                name: "Travel Buddy",
-                description: "Travel agency services",
+                name: "Expedia",
+                description: "Travel agency offering flights, hotels, car rentals, vacation packages, and cruises.",
                 category: "Travel",
+            },
+            {
+                name: "Trader Joe's",
+                description: "Grocery chain with a variety of domestic & imported foods & beverages, plus housewares.",
+                category: "Grocery",
             },
         ];
         const createdBusinesses = await business_model_1.default.insertMany(businesses);
@@ -142,7 +160,7 @@ const seedDatabase = async () => {
         ];
         const reviews = [];
         createdBusinesses.forEach((business) => {
-            const numReviews = Math.floor(Math.random() * 5) + 1; // 1 to 5 reviews per business
+            const numReviews = Math.floor(Math.random() * 4) + 1; // 1 to 4 reviews per business
             for (let i = 0; i < numReviews; i++) {
                 const user = createdUsers[Math.floor(Math.random() * createdUsers.length)];
                 const content = reviewContents[Math.floor(Math.random() * reviewContents.length)];

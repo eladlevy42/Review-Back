@@ -4,7 +4,6 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db").default;
-const path = require("path");
 dotenv.config(); // Load config
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
