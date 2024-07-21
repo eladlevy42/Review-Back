@@ -26,6 +26,9 @@ interface Review {
   likes: [String];
   createdAt: Date;
 }
+interface reqAvg {
+  params: { id: string };
+}
 
 async function getReviews(req: ReviewsReq, res: Response) {
   let page = parseInt(req.query.page) || 1;
@@ -69,41 +72,26 @@ async function createReview(req: AddReviewReq, res: Response) {
   }
 }
 
-// async function toggleLike(req: AddReviewReq, res: Response) {
-//   const review = req.body;
-//   let reviewLikesCopy = review.likes;
-//   function checkId(id: String) {
-//     return id != req.userId;
-//   }
-//   reviewLikesCopy.filter(checkId);
-//   review.likes = reviewLikesCopy;
-//   try {
-//     const updateReview = await Review.findByIdAndUpdate(review._id, review, {
-//       new: true,
-//       runValidators: true,
-//     });
-//     if (!updateReview) {
-//       console.log(
-//         `review.controller, updatereview. review not found with id: ${review._id}`
-//       );
-//       return res.status(404).json({ message: "review not found" });
-//     }
-//     res.json(updateReview);
-//   } catch (err: any) {
-//     console.log(
-//       `review.controller, updatereview. Error while updating review with id: ${review._id}`,
-//       err
-//     );
+async function getAvarageReviews(req: ReviewsReq, res: Response) {
+  const id = req.businessId;
+  try {
+    const reviews = await Review.find({ business: id });
+    console.log(reviews);
 
-//     if (err.name === "ValidationError") {
-//       // Mongoose validation error
-//       console.log(`review.controller, updatereview. ${err.message}`);
-//       res.status(400).json({ message: err.message });
-//     } else {
-//       // Other types of errors
-//       console.log(`review.controller, updatereview. ${err.message}`);
-//       res.status(500).json({ message: "Server error while updating review" });
-//     }
-//   }
-// }
-module.exports = { getReviews, createReview };
+    if (reviews.length > 0) {
+      let count = 0;
+      reviews.forEach((review) => {
+        count += parseInt(review.stars);
+      });
+      const avg = (count / reviews.length).toFixed(1);
+      console.log(avg);
+      return res.status(200).json({ average: `${avg}` });
+    } else {
+      return res.status(200).json({ avg: "0" });
+    }
+  } catch (err: any) {
+    console.log(err);
+    return res.status(500).json({ err: err.message });
+  }
+}
+module.exports = { getReviews, createReview, getAvarageReviews };
