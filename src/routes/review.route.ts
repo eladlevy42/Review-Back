@@ -1,13 +1,16 @@
 import { Router, Request, Response, NextFunction } from "express";
 
 const express = require("express");
-const { verifyUser } = require("../middleware/auth.middleware");
+const { verifyUser, verifyToken } = require("../middleware/auth.middleware");
 const {
   getReviews,
   createReview,
   toggleLike,
 } = require("../controllers/review.controller");
 
+type Middleware = (req: Request, res: Response, next: NextFunction) => void;
+
+const typedVerifyToken = verifyToken as Middleware;
 const router: Router = express.Router();
 
 // Define types for your request handlers
@@ -24,7 +27,7 @@ const typedToggleLike = toggleLike as RequestHandler;
 const typedVerifyUser = verifyUser as RequestHandler;
 
 router.get("/", typedGetReviews);
-router.post("/", typedVerifyUser, typedCreateReview);
-router.put("/", typedVerifyUser, typedToggleLike);
+router.post("/", typedVerifyToken, typedVerifyUser, typedCreateReview);
+router.put("/", typedVerifyToken, typedVerifyUser, typedToggleLike);
 
 module.exports = router;

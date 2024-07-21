@@ -17,7 +17,6 @@ async function register(req, res) {
             password: hashedPassword,
         });
         await user.save();
-        console.log("registered");
         res.status(201).json({ message: "User registered successfully" });
     }
     catch (err) {
@@ -51,3 +50,4 @@ async function login(req, res) {
         res.status(500).json({ err: "Login failed" });
     }
 }
+async function getUserByToken() { }

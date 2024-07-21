@@ -43,7 +43,6 @@ async function register(req: RegisterRequest, res: Response) {
     });
 
     await user.save();
-    console.log("registered");
     res.status(201).json({ message: "User registered successfully" });
   } catch (err: any) {
     if (err.code === 11000) {
@@ -78,5 +77,7 @@ async function login(req: LoginRequest, res: Response) {
     res.status(500).json({ err: "Login failed" });
   }
 }
+
+async function getUserByToken() {}
 
 export { register, login };
