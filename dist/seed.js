@@ -53,12 +53,14 @@ const seedDatabase = async () => {
                 content: "Great service!",
                 business: createdBusinesses[0]._id,
                 user: createdUsers[0]._id,
+                stars: "5",
                 likes: [],
             },
             {
                 content: "Not bad.",
                 business: createdBusinesses[1]._id,
                 user: createdUsers[1]._id,
+                stars: "3",
                 likes: [],
             },
         ];

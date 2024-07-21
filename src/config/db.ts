@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-async function connectDB() {
+export default async function connectDB() {
   try {
     if (!process.env.MONGO_URI) {
       return;
@@ -15,5 +15,3 @@ async function connectDB() {
     process.exit(1);
   }
 }
-
-export default connectDB;

@@ -11,7 +11,6 @@ interface IUser extends Document {
 const userSchema = new Schema<IUser>({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
-
   password: { type: String, required: true },
 });
 
@@ -27,6 +26,7 @@ userSchema.methods.comparePassword = async function (
 ) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
+
 const User = model<IUser>("User", userSchema);
 
 export default User;
