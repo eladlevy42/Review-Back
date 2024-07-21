@@ -25,8 +25,8 @@ const typedCreateReview = createReview as RequestHandler;
 // const typedToggleLike = toggleLike as RequestHandler;
 const typedVerifyUser = verifyUser as RequestHandler;
 
-router.get("/", typedGetReviews);
-router.post("/", typedVerifyToken, typedCreateReview);
+router.get("/:id", typedGetReviews);
+router.post("/:id", typedVerifyToken, typedCreateReview);
 // router.put("/", typedVerifyToken, typedVerifyUser, typedToggleLike);
 
 module.exports = router;

@@ -1,7 +1,6 @@
 const { Mongoose, default: mongoose } = require("mongoose");
 import Review from "../models/review.model";
 import { Request, Response } from "express";
-import { login } from "./auth.controller";
 
 interface ReviewsReq extends Request {
   body: {
@@ -9,9 +8,12 @@ interface ReviewsReq extends Request {
     reviewId: String;
   };
   query: { stars: string; page: string };
+  businessId: string;
 }
 interface AddReviewReq extends Request {
+  businessId: string;
   userId: String;
+  query: { id: string };
   body: Review;
 }
 
@@ -27,13 +29,13 @@ interface Review {
 
 async function getReviews(req: ReviewsReq, res: Response) {
   let page = parseInt(req.query.page) || 1;
-  const { business } = req.body || "";
+  const { businessId } = req;
   const { stars } = req.query || "";
   if (page < 1) {
     page = 1;
   }
   const criteriaObj = {
-    business,
+    business: businessId,
   };
   try {
     const reviews = await Review.find(criteriaObj);
@@ -47,6 +49,7 @@ async function createReview(req: AddReviewReq, res: Response) {
   const review = req.body;
   review.createdAt = new Date();
   review.user = req.userId;
+  review.business = req.businessId;
   const reviewToAdd = new Review(review);
   try {
     const savedReview = await reviewToAdd.save();
