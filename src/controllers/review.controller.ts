@@ -41,7 +41,6 @@ async function getReviews(req: ReviewsReq, res: Response) {
     const reviews = await Review.find({ criteriaObj });
     res.json({ reviews });
   } catch (err: any) {
-    console.log(err);
     res.status(500).json({ message: err.message });
   }
 }

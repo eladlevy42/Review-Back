@@ -5,7 +5,6 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
-console.log("JWT_SECRET:", JWT_SECRET);
 
 const SALT_ROUNDS = 10;
 
@@ -36,7 +35,6 @@ async function register(req: RegisterRequest, res: Response) {
     const { username, password, email } = req.body;
 
     const hashedPassword = await bcryptjs.hash(password, SALT_ROUNDS);
-    console.log("Hashed Password:", hashedPassword);
 
     const user = new User({
       username,
@@ -51,7 +49,7 @@ async function register(req: RegisterRequest, res: Response) {
       console.log("Username already exists");
       return res.status(400).json({ error: "User already exists" });
     }
-    console.log(err);
+
     res.status(500).json({ error: "Registration failed" });
   }
 }
@@ -66,9 +64,6 @@ async function login(req: LoginRequest, res: Response) {
       return res.status(401).json({ error: "No registered username" });
     }
 
-    console.log("Plain password:", password);
-    console.log("Hashed password:", user.password);
-
     const isPasswordMatch = await bcryptjs.compare(password, user.password);
     if (!isPasswordMatch) {
       console.log("Wrong password");
@@ -78,11 +73,10 @@ async function login(req: LoginRequest, res: Response) {
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
       expiresIn: "24h",
     });
-    console.log("Token generated:", token);
+
     console.log("loggedIn");
     res.status(200).json({ token });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Login failed" });
   }
 }
