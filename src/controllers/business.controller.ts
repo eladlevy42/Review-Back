@@ -24,6 +24,7 @@ async function getBusiness(req: requestGetBusiness, res: Response) {
     res.status(201).json({ business });
   } catch (err: any) {
     console.log(err);
+    res.status(500).json({ Error: err.message });
   }
 }
 
