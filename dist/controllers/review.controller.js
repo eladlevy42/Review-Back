@@ -1,20 +1,23 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const { Mongoose, default: mongoose } = require("mongoose");
-const Review = require("../models/review.model");
+const review_model_1 = __importDefault(require("../models/review.model"));
 async function getReviews(req, res) {
+    console.log(1);
     let page = parseInt(req.query.page) || 1;
     const { business } = req.body || "";
-    const { stars } = req.body || "";
+    const { stars } = req.query || "";
     if (page < 1) {
         page = 1;
     }
     const criteriaObj = {
         business,
-        stars,
     };
     try {
-        const reviews = await Review.find({ criteriaObj });
+        const reviews = await review_model_1.default.find(criteriaObj);
         res.json({ reviews });
     }
     catch (err) {
@@ -24,7 +27,7 @@ async function getReviews(req, res) {
 async function createReview(req, res) {
     const review = req.body;
     review.user = req.userId;
-    const reviewToAdd = new Review(review);
+    const reviewToAdd = new review_model_1.default(review);
     try {
         const savedReview = await reviewToAdd.save();
         res.status(201).json(savedReview);
@@ -50,7 +53,7 @@ async function toggleLike(req, res) {
     reviewLikesCopy.filter(checkId);
     review.likes = reviewLikesCopy;
     try {
-        const updateReview = await Review.findByIdAndUpdate(review._id, review, {
+        const updateReview = await review_model_1.default.findByIdAndUpdate(review._id, review, {
             new: true,
             runValidators: true,
         });

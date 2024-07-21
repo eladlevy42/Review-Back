@@ -7,6 +7,7 @@ const reviewSchema = new mongoose_1.Schema({
     user: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },
     stars: { type: String, required: true, ref: "Stars", default: "3" },
     likes: { type: [mongoose_1.Schema.Types.ObjectId], default: [] },
+    createdAt: { type: Date, required: true },
 });
 const Review = (0, mongoose_1.model)("Review", reviewSchema);
 exports.default = Review;
