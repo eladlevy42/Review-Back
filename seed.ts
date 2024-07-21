@@ -1,13 +1,10 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
-import Business from "./models/business.model";
-import Review from "./models/review.model";
-import User from "./models/user.model";
-let mongoURI: any = "";
-
-if (!process.env.MONGO_URI) {
-  mongoURI = process.env.MONGO_URI;
-}
+import bcrypt from "bcrypt";
+import Business from "./src/models/business.model";
+import Review from "./src/models/review.model";
+import User from "./src/models/user.model";
+const mongoURI =
+  process.env.MONGO_URI || "your_default_mongodb_connection_string";
 
 const seedDatabase = async () => {
   try {
