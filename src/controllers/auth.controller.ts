@@ -78,6 +78,4 @@ async function login(req: LoginRequest, res: Response) {
   }
 }
 
-async function getUserByToken() {}
-
 export { register, login };
