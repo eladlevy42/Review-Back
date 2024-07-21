@@ -63,7 +63,7 @@ async function login(req: LoginRequest, res: Response) {
       return res.status(401).json({ error: "No Registered username" });
     }
 
-    const isPasswordMatch = await user.comparePassword(password);
+    const isPasswordMatch = await bcryptjs.compare(password, user.password);
     if (!isPasswordMatch) {
       return res.status(401).json({ error: "Wrong Password" });
     }
