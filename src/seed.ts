@@ -1,10 +1,15 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import Business from "./src/models/business.model";
-import Review from "./src/models/review.model";
-import User from "./src/models/user.model";
-const mongoURI =
-  process.env.MONGO_URI || "your_default_mongodb_connection_string";
+import Business from "./models/business.model";
+import Review from "./models/review.model";
+import User from "./models/user.model";
+import dotenv from "dotenv";
+
+// Load environment variables from .env file
+dotenv.config();
+
+const mongoURI = process.env.MONGO_URI || ""; // Fallback to a default URI if not set
+console.log(mongoURI);
 
 const seedDatabase = async () => {
   try {
