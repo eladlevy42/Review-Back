@@ -15,11 +15,12 @@ app.use(cors({ origin: "http://localhost:5173" })); // Allow CORS for local deve
 connectDB();
 // Route imports
 const reviewRoutes = require("./routes/review.route");
-// const userRoutes = require("./routes/user.route");
+const businessRoutes = require("./routes/business.route");
 const authRoutes = require("./routes/auth.route");
 // Apply routes
 app.use("/api/review", reviewRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/business", businessRoutes);
 // app.use("/api/user", typedVerifyToken, userRoutes);
 app.use(express.static("public"));
 // Catch-all route
