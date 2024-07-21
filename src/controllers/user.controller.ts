@@ -13,7 +13,6 @@ async function getUser(req: Req, res: Response) {
     }
     res.status(200).json(user);
   } catch (err: any) {
-    console.log(err);
     res.status(500).json({ err: err.message });
   }
 }
