@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import { Document } from "mongoose";
+
 import Business from "../models/business.model";
-import jwt from "jsonwebtoken";
-import { login } from "./auth.controller";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
 const SALT_ROUNDS = 10;
