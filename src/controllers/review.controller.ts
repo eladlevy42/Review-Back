@@ -1,16 +1,13 @@
 const { Mongoose, default: mongoose } = require("mongoose");
-const Review = require("../models/review.model");
+import Review from "../models/review.model";
 import { Request, Response } from "express";
 
 interface ReviewsReq extends Request {
   body: {
     business: String;
     reviewId: String;
-    stars: string;
   };
-  query: {
-    page: string;
-  };
+  query: { stars: string; page: string };
 }
 interface AddReviewReq extends Request {
   userId: String;
@@ -27,18 +24,19 @@ interface Review {
 }
 
 async function getReviews(req: ReviewsReq, res: Response) {
+  console.log(1);
+
   let page = parseInt(req.query.page) || 1;
   const { business } = req.body || "";
-  const { stars } = req.body || "";
+  const { stars } = req.query || "";
   if (page < 1) {
     page = 1;
   }
   const criteriaObj = {
     business,
-    stars,
   };
   try {
-    const reviews = await Review.find({ criteriaObj });
+    const reviews = await Review.find(criteriaObj);
     res.json({ reviews });
   } catch (err: any) {
     res.status(500).json({ message: err.message });

@@ -6,6 +6,7 @@ interface IReview extends Document {
   user: Schema.Types.ObjectId;
   stars: string;
   likes: Schema.Types.ObjectId[];
+  createdAt: Date;
 }
 
 const reviewSchema = new Schema<IReview>({
@@ -14,6 +15,7 @@ const reviewSchema = new Schema<IReview>({
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },
   stars: { type: String, required: true, ref: "Stars", default: "3" },
   likes: { type: [Schema.Types.ObjectId], default: [] },
+  createdAt: { type: Date, required: true },
 });
 
 const Review = model<IReview>("Review", reviewSchema);
