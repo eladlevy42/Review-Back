@@ -15,10 +15,22 @@ async function getBusiness(req, res) {
         const business = await business_model_1.default.find()
             .skip((page - 1) * 10)
             .limit(10);
-        res.status(201).json({ business });
+        res.status(200).json({ business });
     }
     catch (err) {
         console.log(err);
+        res.status(500).json({ Error: err.message });
     }
 }
-module.exports = { getBusiness };
+async function createBusiness(req, res) {
+    const business = req.body;
+    try {
+        const newBusiness = new business_model_1.default(business);
+        await newBusiness.save();
+        res.status(200).json({ message: "new Business Saved Succesfully" });
+    }
+    catch (err) {
+        return res.status(400).json({ error: "Create new Business failed" });
+    }
+}
+module.exports = { getBusiness, createBusiness };
