@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { Document } from "mongoose";
+import User from "../models/user.model"; // Ensure correct import
+import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-const User = require("../models/user.model").default; // Ensure .default is used
-const bcryptjs = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-
-const { JWT_SECRET } = process.env;
+const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
+console.log("JWT_SECRET:", JWT_SECRET);
 
 const SALT_ROUNDS = 10;
 
@@ -15,6 +15,7 @@ interface UserDocument extends Document {
   password: string;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
+
 interface RegisterRequest extends Request {
   body: {
     username: string;
@@ -35,6 +36,7 @@ async function register(req: RegisterRequest, res: Response) {
     const { username, password, email } = req.body;
 
     const hashedPassword = await bcryptjs.hash(password, SALT_ROUNDS);
+    console.log("Hashed Password:", hashedPassword);
 
     const user = new User({
       username,
@@ -46,7 +48,7 @@ async function register(req: RegisterRequest, res: Response) {
     res.status(201).json({ message: "User registered successfully" });
   } catch (err: any) {
     if (err.code === 11000) {
-      console.log("username already exists");
+      console.log("Username already exists");
       return res.status(400).json({ error: "User already exists" });
     }
     console.log(err);
@@ -60,21 +62,28 @@ async function login(req: LoginRequest, res: Response) {
 
     const user = (await User.findOne({ username })) as UserDocument | null;
     if (!user) {
-      return res.status(401).json({ error: "No Registered username" });
+      console.log("No registered username");
+      return res.status(401).json({ error: "No registered username" });
     }
+
+    console.log("Plain password:", password);
+    console.log("Hashed password:", user.password);
 
     const isPasswordMatch = await bcryptjs.compare(password, user.password);
     if (!isPasswordMatch) {
-      return res.status(401).json({ error: "Wrong Password" });
+      console.log("Wrong password");
+      return res.status(401).json({ error: "Wrong password" });
     }
+
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
       expiresIn: "24h",
     });
+    console.log("Token generated:", token);
     console.log("loggedIn");
     res.status(200).json({ token });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ err: "Login failed" });
+    res.status(500).json({ error: "Login failed" });
   }
 }
 

@@ -27,7 +27,6 @@ function verifyToken(
   }
 
   try {
-    console.log(JWT_SECRET);
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string }; // Verify token
     console.log(decoded.userId);
 
