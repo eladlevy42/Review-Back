@@ -18,7 +18,6 @@ async function getReviews(req, res) {
         res.json({ reviews });
     }
     catch (err) {
-        console.log(err);
         res.status(500).json({ message: err.message });
     }
 }

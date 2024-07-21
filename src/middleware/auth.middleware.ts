@@ -28,13 +28,10 @@ function verifyToken(
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string }; // Verify token
-    console.log(decoded.userId);
 
     req.userId = decoded.userId; // Add userId to request object
     next(); // Call next middleware
   } catch (error: any) {
-    console.log(error.message);
-
     return res.status(401).json({ error: "Invalid token" });
   }
 }
