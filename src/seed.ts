@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import Business from "./models/business.model";
 import Review from "./models/review.model";
-import User from "./models/user.model";
+import { User } from "./models/user.model";
 import dotenv from "dotenv";
 
 // Load environment variables from .env file
@@ -184,8 +184,8 @@ const seedDatabase = async () => {
         const stars = Math.floor(Math.random() * 5) + 1; // Random stars between 1 and 5
 
         const likes = createdUsers
-          .filter((u) => Math.random() < 0.5)
-          .map((u) => u._id); // Randomly assign likes from other users
+          .filter((u: any) => Math.random() < 0.5)
+          .map((u: any) => u._id); // Randomly assign likes from other users
 
         reviews.push({
           content,

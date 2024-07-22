@@ -1,7 +1,7 @@
 const { Mongoose, default: mongoose } = require("mongoose");
 import Review from "../models/review.model";
 import { Request, Response } from "express";
-import User from "../models/user.model";
+import { User } from "../models/user.model";
 
 interface ReviewsReq extends Request {
   body: {

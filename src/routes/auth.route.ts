@@ -5,6 +5,10 @@ const router: Router = express.Router();
 const { register, login } = require("../controllers/auth.controller");
 const { getUser } = require("../controllers/user.controller");
 const { verifyToken } = require("../middleware/auth.middleware");
+const {
+  verifyGoogle,
+  signWithGoogle,
+} = require("../controllers/google.controller");
 // Define a type for request handlers
 type RequestHandler = (
   req: Request,
@@ -17,8 +21,10 @@ const typedRegister = register as RequestHandler;
 const typedLogin = login as RequestHandler;
 const typedGetUser = getUser as RequestHandler;
 const typedVerifyToken = verifyToken as Middleware;
+const typedSignGoogle = signWithGoogle as RequestHandler;
+const typedVerifyGoogle = verifyGoogle as Middleware;
 router.get("/login", typedVerifyToken, typedGetUser);
 router.post("/register", typedRegister);
 router.post("/login", typedLogin);
-
+router.post("/google", typedVerifyGoogle, typedSignGoogle);
 module.exports = router;
