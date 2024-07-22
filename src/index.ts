@@ -4,7 +4,6 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db").default;
-const path = require("path");
 
 dotenv.config(); // Load config
 const app = express();
@@ -19,12 +18,13 @@ connectDB();
 
 // Route imports
 const reviewRoutes = require("./routes/review.route");
-// const userRoutes = require("./routes/user.route");
+const businessRoutes = require("./routes/business.route");
 const authRoutes = require("./routes/auth.route");
 
 // Apply routes
 app.use("/api/review", reviewRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/business", businessRoutes);
 // app.use("/api/user", typedVerifyToken, userRoutes);
 app.use(express.static("public"));
 

@@ -19,12 +19,10 @@ function verifyToken(req, res, next) {
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET); // Verify token
-        console.log(decoded.userId);
         req.userId = decoded.userId; // Add userId to request object
         next(); // Call next middleware
     }
     catch (error) {
-        console.log(error.message);
         return res.status(401).json({ error: "Invalid token" });
     }
 }

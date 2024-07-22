@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express = require("express");
+const router = express.Router();
+const { getBusiness, createBusiness, } = require("../controllers/business.controller");
+const { verifyToken } = require("../middleware/auth.middleware");
+const typedVerifyToken = verifyToken;
+const typedGetBusiness = getBusiness;
+const typedCreateBusiness = createBusiness;
+router.get("/", typedGetBusiness);
+router.post("/", typedVerifyToken, typedCreateBusiness);
+module.exports = router;
