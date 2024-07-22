@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const business_model_1 = __importDefault(require("../models/business.model"));
 async function verifyBusiness(req, res, next) {
     const { id } = req.params;
-    console.log(id);
     try {
         const business = await business_model_1.default.findById(id);
         if (!business) {

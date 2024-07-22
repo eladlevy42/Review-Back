@@ -1,12 +1,19 @@
-import { Request, Response, NextFunction } from "express";
-
-const express = require("express");
-const dotenv = require("dotenv");
-const cors = require("cors");
-const connectDB = require("./config/db").default;
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import http, { createServer, Server } from "http";
+import { Server as SocketIOServer } from "socket.io";
 
 dotenv.config(); // Load config
+
 const app = express();
+const server: Server = createServer(app);
+export const io = new SocketIOServer(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 // Middlewares
@@ -14,6 +21,7 @@ app.use(express.json()); // Parse JSON bodies
 app.use(cors({ origin: "http://localhost:5173" })); // Allow CORS for local development
 
 // Database connection
+const connectDB = require("./config/db").default;
 connectDB();
 
 // Route imports
@@ -25,15 +33,17 @@ const authRoutes = require("./routes/auth.route");
 app.use("/api/review", reviewRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/business", businessRoutes);
-// app.use("/api/user", typedVerifyToken, userRoutes);
 app.use(express.static("public"));
 
-// Catch-all route
-// app.get("*", (req: Request, res: Response) => {
-//   res.sendFile(path.join(__dirname, "public", "index.html"));
-// });
-
 // Start server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// Handle Socket.IO connections
+// io.on("connection", (socket) => {
+//   console.log("A user connected");
+//   socket.on("disconnect", () => {
+//     console.log("User disconnected");
+//   });
+// });
