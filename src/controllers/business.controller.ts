@@ -33,10 +33,11 @@ async function getBusiness(req: Request, res: Response) {
   }
 
   try {
+    const totalBusinesses = await Business.countDocuments(query);
     const business = await Business.find(query)
       .skip((page - 1) * 10)
       .limit(10);
-    res.status(200).json({ business });
+    res.status(200).json({ business, totalBusinesses });
   } catch (err: any) {
     console.log(err);
     res.status(500).json({ Error: err.message });
