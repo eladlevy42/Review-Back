@@ -57,9 +57,7 @@ async function register(req: RegisterRequest, res: Response) {
 async function login(req: LoginRequest, res: Response) {
   try {
     const { email, password } = req.body;
-    console.log(email);
     const user = await User.findOne({ email });
-    console.log(user);
 
     if (!user) {
       console.log("No registered email");

@@ -12,8 +12,6 @@ async function verifyBusiness(
   next: NextFunction
 ) {
   const { id } = req.params;
-  console.log(id);
-
   try {
     const business = await Business.findById(id);
     if (!business) {
