@@ -5,20 +5,18 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
-console.log("JWT_SECRET:", JWT_SECRET);
 
 const SALT_ROUNDS = 10;
 
 interface UserDocument extends Document {
-  username: string;
+  fullName: string;
   email: string;
   password: string;
-  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 interface RegisterRequest extends Request {
   body: {
-    username: string;
+    fullName: string;
     password: string;
     email: string;
   };
@@ -26,20 +24,19 @@ interface RegisterRequest extends Request {
 
 interface LoginRequest extends Request {
   body: {
-    username: string;
+    email: string;
     password: string;
   };
 }
 
 async function register(req: RegisterRequest, res: Response) {
   try {
-    const { username, password, email } = req.body;
+    const { fullName, password, email } = req.body;
 
     const hashedPassword = await bcryptjs.hash(password, SALT_ROUNDS);
-    console.log("Hashed Password:", hashedPassword);
 
     const user = new User({
-      username,
+      fullName,
       email,
       password: hashedPassword,
     });
@@ -48,26 +45,27 @@ async function register(req: RegisterRequest, res: Response) {
     res.status(201).json({ message: "User registered successfully" });
   } catch (err: any) {
     if (err.code === 11000) {
-      console.log("Username already exists");
+      console.log("Email already exists");
       return res.status(400).json({ error: "User already exists" });
     }
-    console.log(err);
+    console.log(err.message);
+
     res.status(500).json({ error: "Registration failed" });
   }
 }
 
 async function login(req: LoginRequest, res: Response) {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
+    console.log(email);
 
-    const user = (await User.findOne({ username })) as UserDocument | null;
+    const user = await User.findOne({ email });
+    console.log(user);
+
     if (!user) {
-      console.log("No registered username");
-      return res.status(401).json({ error: "No registered username" });
+      console.log("No registered email");
+      return res.status(401).json({ error: "No registered email" });
     }
-
-    console.log("Plain password:", password);
-    console.log("Hashed password:", user.password);
 
     const isPasswordMatch = await bcryptjs.compare(password, user.password);
     if (!isPasswordMatch) {
@@ -78,11 +76,10 @@ async function login(req: LoginRequest, res: Response) {
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
       expiresIn: "24h",
     });
-    console.log("Token generated:", token);
+
     console.log("loggedIn");
     res.status(200).json({ token });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Login failed" });
   }
 }

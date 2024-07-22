@@ -1,19 +1,19 @@
 const { Mongoose, default: mongoose } = require("mongoose");
-const Review = require("../models/review.model");
+import Review from "../models/review.model";
 import { Request, Response } from "express";
 
 interface ReviewsReq extends Request {
   body: {
     business: String;
     reviewId: String;
-    stars: string;
   };
-  query: {
-    page: string;
-  };
+  query: { stars: string; page: string };
+  businessId: string;
 }
 interface AddReviewReq extends Request {
+  businessId: string;
   userId: String;
+  query: { id: string };
   body: Review;
 }
 
@@ -24,34 +24,39 @@ interface Review {
   stars: string;
   content: String;
   likes: [String];
+  createdAt: Date;
+}
+interface reqAvg {
+  params: { id: string };
 }
 
 async function getReviews(req: ReviewsReq, res: Response) {
   let page = parseInt(req.query.page) || 1;
-  const { business } = req.body || "";
-  const { stars } = req.body || "";
+  const { businessId } = req;
+  const { stars } = req.query || "";
   if (page < 1) {
     page = 1;
   }
   const criteriaObj = {
-    business,
-    stars,
+    business: businessId,
   };
   try {
-    const reviews = await Review.find({ criteriaObj });
+    const reviews = await Review.find(criteriaObj);
     res.json({ reviews });
   } catch (err: any) {
-    console.log(err);
     res.status(500).json({ message: err.message });
   }
 }
 
 async function createReview(req: AddReviewReq, res: Response) {
   const review = req.body;
+  review.createdAt = new Date();
   review.user = req.userId;
+  review.business = req.businessId;
   const reviewToAdd = new Review(review);
   try {
     const savedReview = await reviewToAdd.save();
+    console.log(savedReview);
     res.status(201).json(savedReview);
   } catch (err: any) {
     console.log(
@@ -67,41 +72,26 @@ async function createReview(req: AddReviewReq, res: Response) {
   }
 }
 
-async function toggleLike(req: AddReviewReq, res: Response) {
-  const review = req.body;
-  let reviewLikesCopy = review.likes;
-  function checkId(id: String) {
-    return id != req.userId;
-  }
-  reviewLikesCopy.filter(checkId);
-  review.likes = reviewLikesCopy;
+async function getAvarageReviews(req: ReviewsReq, res: Response) {
+  const id = req.businessId;
   try {
-    const updateReview = await Review.findByIdAndUpdate(review._id, review, {
-      new: true,
-      runValidators: true,
-    });
-    if (!updateReview) {
-      console.log(
-        `review.controller, updatereview. review not found with id: ${review._id}`
-      );
-      return res.status(404).json({ message: "review not found" });
-    }
-    res.json(updateReview);
-  } catch (err: any) {
-    console.log(
-      `review.controller, updatereview. Error while updating review with id: ${review._id}`,
-      err
-    );
+    const reviews = await Review.find({ business: id });
+    console.log(reviews);
 
-    if (err.name === "ValidationError") {
-      // Mongoose validation error
-      console.log(`review.controller, updatereview. ${err.message}`);
-      res.status(400).json({ message: err.message });
+    if (reviews.length > 0) {
+      let count = 0;
+      reviews.forEach((review) => {
+        count += parseInt(review.stars);
+      });
+      const avg = (count / reviews.length).toFixed(1);
+      console.log(avg);
+      return res.status(200).json({ average: `${avg}` });
     } else {
-      // Other types of errors
-      console.log(`review.controller, updatereview. ${err.message}`);
-      res.status(500).json({ message: "Server error while updating review" });
+      return res.status(200).json({ avg: "0" });
     }
+  } catch (err: any) {
+    console.log(err);
+    return res.status(500).json({ err: err.message });
   }
 }
-module.exports = { getReviews, createReview, toggleLike };
+module.exports = { getReviews, createReview, getAvarageReviews };
