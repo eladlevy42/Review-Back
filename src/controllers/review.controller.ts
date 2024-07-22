@@ -2,6 +2,7 @@ const { Mongoose, default: mongoose } = require("mongoose");
 import Review from "../models/review.model";
 import { Request, Response } from "express";
 import { User } from "../models/user.model";
+import Business from "../models/business.model";
 
 interface ReviewsReq extends Request {
   body: {
@@ -54,6 +55,7 @@ async function anonymReview(req: AddReviewReq, res: Response) {
     review.userFullName = await getUserFullName(review.user);
     const reviewToAdd = new Review(review);
     const savedReview = await reviewToAdd.save();
+    getAvarageReviews(req.businessId);
     console.log(savedReview);
     res.status(200).send({ message: "Review added successfully", review });
   } catch (err: any) {
@@ -91,6 +93,7 @@ async function createReview(req: AddReviewReq, res: Response) {
     const reviewToAdd = new Review(review);
     const savedReview = await reviewToAdd.save();
     console.log(savedReview);
+    getAvarageReviews(req.businessId);
     res.status(201).json(savedReview);
   } catch (err: any) {
     console.log(
@@ -106,26 +109,31 @@ async function createReview(req: AddReviewReq, res: Response) {
   }
 }
 
-async function getAvarageReviews(req: ReviewsReq, res: Response) {
-  const id = req.businessId;
+async function getAvarageReviews(id: string) {
   try {
     const reviews = await Review.find({ business: id });
     console.log(reviews);
-
     if (reviews.length > 0) {
       let count = 0;
       reviews.forEach((review) => {
-        count += parseInt(review.stars);
+        count += review.stars;
       });
-      const avg = (count / reviews.length).toFixed(1);
+      const avg: Number = parseFloat((count / reviews.length).toFixed(1));
       console.log(avg);
-      return res.status(200).json({ average: `${avg}` });
-    } else {
-      return res.status(200).json({ avg: "0" });
+      updateReviewAvg(id, avg);
+      return;
     }
   } catch (err: any) {
     console.log(err);
-    return res.status(500).json({ err: err.message });
+    return;
   }
+}
+
+async function updateReviewAvg(businessId: string, newAvg: Number) {
+  const business = await Business.findById(businessId);
+  const newBusiness = await Business.findByIdAndUpdate({
+    ...business,
+    stars: newAvg,
+  });
 }
 module.exports = { getReviews, createReview, getAvarageReviews, anonymReview };
