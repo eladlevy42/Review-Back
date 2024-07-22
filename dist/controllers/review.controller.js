@@ -5,6 +5,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const { Mongoose, default: mongoose } = require("mongoose");
 const review_model_1 = __importDefault(require("../models/review.model"));
+const user_model_1 = require("../models/user.model");
+const business_model_1 = __importDefault(require("../models/business.model"));
+// Function to get user full name by ID
+async function getUserFullName(id) {
+    try {
+        const user = await user_model_1.User.findById(id);
+        if (user) {
+            console.log(user.fullName);
+            return user.fullName;
+        }
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+}
+// Function to handle anonymous reviews
+async function anonymReview(req, res) {
+    let review = req.body;
+    review.business = req.businessId;
+    review.user = "424242424242424242424242";
+    review.createdAt = new Date();
+    console.log(review);
+    try {
+        review.userFullName = await getUserFullName(review.user);
+        const reviewToAdd = new review_model_1.default(review);
+        const savedReview = await reviewToAdd.save();
+        getAvarageReviews(req.businessId);
+        console.log(savedReview);
+        res.status(200).send({ message: "Review added successfully", review });
+    }
+    catch (err) {
+        res
+            .status(500)
+            .send({ message: "Error adding review", error: err.message });
+    }
+}
 async function getReviews(req, res) {
     let page = parseInt(req.query.page) || 1;
     const { businessId } = req;
@@ -28,10 +64,12 @@ async function createReview(req, res) {
     review.createdAt = new Date();
     review.user = req.userId;
     review.business = req.businessId;
-    const reviewToAdd = new review_model_1.default(review);
     try {
+        review.userFullName = await getUserFullName(review.user);
+        const reviewToAdd = new review_model_1.default(review);
         const savedReview = await reviewToAdd.save();
         console.log(savedReview);
+        getAvarageReviews(req.businessId);
         res.status(201).json(savedReview);
     }
     catch (err) {
@@ -46,27 +84,31 @@ async function createReview(req, res) {
         }
     }
 }
-async function getAvarageReviews(req, res) {
-    const id = req.businessId;
+async function getAvarageReviews(id) {
     try {
         const reviews = await review_model_1.default.find({ business: id });
         console.log(reviews);
         if (reviews.length > 0) {
             let count = 0;
             reviews.forEach((review) => {
-                count += parseInt(review.stars);
+                count += review.stars;
             });
-            const avg = (count / reviews.length).toFixed(1);
+            const avg = parseFloat((count / reviews.length).toFixed(1));
             console.log(avg);
-            return res.status(200).json({ average: `${avg}` });
-        }
-        else {
-            return res.status(200).json({ avg: "0" });
+            updateReviewAvg(id, avg);
+            return;
         }
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ err: err.message });
+        return;
     }
 }
-module.exports = { getReviews, createReview, getAvarageReviews };
+async function updateReviewAvg(businessId, newAvg) {
+    const business = await business_model_1.default.findById(businessId);
+    const newBusiness = await business_model_1.default.findByIdAndUpdate({
+        ...business,
+        stars: newAvg,
+    });
+}
+module.exports = { getReviews, createReview, getAvarageReviews, anonymReview };
