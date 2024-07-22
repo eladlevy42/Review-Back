@@ -49,14 +49,13 @@ async function anonymReview(req: AddReviewReq, res: Response) {
   review.business = req.businessId;
   review.user = "424242424242424242424242";
   review.createdAt = new Date();
-  console.log(review);
 
   try {
     review.userFullName = await getUserFullName(review.user);
     const reviewToAdd = new Review(review);
     const savedReview = await reviewToAdd.save();
     getAvarageReviews(req.businessId);
-    console.log(savedReview);
+
     res.status(200).send({ message: "Review added successfully", review });
   } catch (err: any) {
     res
@@ -92,7 +91,7 @@ async function createReview(req: AddReviewReq, res: Response) {
     review.userFullName = await getUserFullName(review.user);
     const reviewToAdd = new Review(review);
     const savedReview = await reviewToAdd.save();
-    console.log(savedReview);
+
     getAvarageReviews(req.businessId);
     res.status(201).json(savedReview);
   } catch (err: any) {
@@ -112,14 +111,12 @@ async function createReview(req: AddReviewReq, res: Response) {
 async function getAvarageReviews(id: string) {
   try {
     const reviews = await Review.find({ business: id });
-    console.log(reviews);
     if (reviews.length > 0) {
       let count = 0;
       reviews.forEach((review) => {
         count += review.stars;
       });
       const avg: Number = parseFloat((count / reviews.length).toFixed(1));
-      console.log(avg);
       updateReviewAvg(id, avg);
       return;
     }
@@ -130,10 +127,16 @@ async function getAvarageReviews(id: string) {
 }
 
 async function updateReviewAvg(businessId: string, newAvg: Number) {
-  const business = await Business.findById(businessId);
-  const newBusiness = await Business.findByIdAndUpdate({
-    ...business,
-    stars: newAvg,
-  });
+  try {
+    const business = await Business.findById(businessId);
+
+    const newBusiness = await Business.findByIdAndUpdate(
+      businessId,
+      { stars: newAvg },
+      { new: true, runValidators: true }
+    );
+  } catch (err: any) {
+    console.log(err);
+  }
 }
 module.exports = { getReviews, createReview, getAvarageReviews, anonymReview };
