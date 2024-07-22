@@ -5,6 +5,40 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const { Mongoose, default: mongoose } = require("mongoose");
 const review_model_1 = __importDefault(require("../models/review.model"));
+const user_model_1 = __importDefault(require("../models/user.model"));
+// Function to get user full name by ID
+async function getUserFullName(id) {
+    try {
+        const user = await user_model_1.default.findById(id);
+        if (user) {
+            console.log(user.fullName);
+            return user.fullName;
+        }
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+}
+// Function to handle anonymous reviews
+async function anonymReview(req, res) {
+    let review = req.body;
+    review.business = req.businessId;
+    review.user = "424242424242424242424242";
+    review.createdAt = new Date();
+    console.log(review);
+    try {
+        review.userFullName = await getUserFullName(review.user);
+        const reviewToAdd = new review_model_1.default(review);
+        const savedReview = await reviewToAdd.save();
+        console.log(savedReview);
+        res.status(200).send({ message: "Review added successfully", review });
+    }
+    catch (err) {
+        res
+            .status(500)
+            .send({ message: "Error adding review", error: err.message });
+    }
+}
 async function getReviews(req, res) {
     let page = parseInt(req.query.page) || 1;
     const { businessId } = req;
@@ -28,8 +62,9 @@ async function createReview(req, res) {
     review.createdAt = new Date();
     review.user = req.userId;
     review.business = req.businessId;
-    const reviewToAdd = new review_model_1.default(review);
     try {
+        review.userFullName = await getUserFullName(review.user);
+        const reviewToAdd = new review_model_1.default(review);
         const savedReview = await reviewToAdd.save();
         console.log(savedReview);
         res.status(201).json(savedReview);
@@ -69,4 +104,4 @@ async function getAvarageReviews(req, res) {
         return res.status(500).json({ err: err.message });
     }
 }
-module.exports = { getReviews, createReview, getAvarageReviews };
+module.exports = { getReviews, createReview, getAvarageReviews, anonymReview };
