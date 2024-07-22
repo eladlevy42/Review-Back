@@ -23,6 +23,7 @@ async function getBusiness(req: Request, res: Response) {
   let page = parseInt(req.query.page as string) || 1;
   const name = req.query.name as string;
   const category = req.query.category as string;
+  const minRating = parseFloat(req.query.minRating as string) || 0;
 
   const query: any = {};
   if (name) {
@@ -30,6 +31,9 @@ async function getBusiness(req: Request, res: Response) {
   }
   if (category) {
     query.category = category;
+  }
+  if (minRating) {
+    query.stars = { $gte: minRating };
   }
 
   try {
@@ -43,7 +47,6 @@ async function getBusiness(req: Request, res: Response) {
     res.status(500).json({ Error: err.message });
   }
 }
-
 export default getBusiness;
 
 async function createBusiness(req: requestCreateBusiness, res: Response) {
