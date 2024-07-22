@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.register = register;
 exports.login = login;
-const user_model_1 = __importDefault(require("../models/user.model")); // Ensure correct import
+const user_model_1 = require("../models/user.model"); // Ensure correct import
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
@@ -14,7 +14,7 @@ async function register(req, res) {
     try {
         const { fullName, password, email } = req.body;
         const hashedPassword = await bcryptjs_1.default.hash(password, SALT_ROUNDS);
-        const user = new user_model_1.default({
+        const user = new user_model_1.User({
             fullName,
             email,
             password: hashedPassword,
@@ -35,7 +35,7 @@ async function login(req, res) {
     try {
         const { email, password } = req.body;
         console.log(email);
-        const user = await user_model_1.default.findOne({ email });
+        const user = await user_model_1.User.findOne({ email });
         console.log(user);
         if (!user) {
             console.log("No registered email");

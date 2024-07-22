@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import User from "../models/user.model"; // Ensure correct path
+import { User } from "../models/user.model"; // Ensure correct path
 
 interface Req extends Request {
   userId: string;

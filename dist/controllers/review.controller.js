@@ -5,11 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const { Mongoose, default: mongoose } = require("mongoose");
 const review_model_1 = __importDefault(require("../models/review.model"));
-const user_model_1 = __importDefault(require("../models/user.model"));
+const user_model_1 = require("../models/user.model");
+const business_model_1 = __importDefault(require("../models/business.model"));
 // Function to get user full name by ID
 async function getUserFullName(id) {
     try {
-        const user = await user_model_1.default.findById(id);
+        const user = await user_model_1.User.findById(id);
         if (user) {
             console.log(user.fullName);
             return user.fullName;
@@ -30,6 +31,7 @@ async function anonymReview(req, res) {
         review.userFullName = await getUserFullName(review.user);
         const reviewToAdd = new review_model_1.default(review);
         const savedReview = await reviewToAdd.save();
+        getAvarageReviews(req.businessId);
         console.log(savedReview);
         res.status(200).send({ message: "Review added successfully", review });
     }
@@ -67,6 +69,7 @@ async function createReview(req, res) {
         const reviewToAdd = new review_model_1.default(review);
         const savedReview = await reviewToAdd.save();
         console.log(savedReview);
+        getAvarageReviews(req.businessId);
         res.status(201).json(savedReview);
     }
     catch (err) {
@@ -81,27 +84,31 @@ async function createReview(req, res) {
         }
     }
 }
-async function getAvarageReviews(req, res) {
-    const id = req.businessId;
+async function getAvarageReviews(id) {
     try {
         const reviews = await review_model_1.default.find({ business: id });
         console.log(reviews);
         if (reviews.length > 0) {
             let count = 0;
             reviews.forEach((review) => {
-                count += parseInt(review.stars);
+                count += review.stars;
             });
-            const avg = (count / reviews.length).toFixed(1);
+            const avg = parseFloat((count / reviews.length).toFixed(1));
             console.log(avg);
-            return res.status(200).json({ average: `${avg}` });
-        }
-        else {
-            return res.status(200).json({ avg: "0" });
+            updateReviewAvg(id, avg);
+            return;
         }
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ err: err.message });
+        return;
     }
+}
+async function updateReviewAvg(businessId, newAvg) {
+    const business = await business_model_1.default.findById(businessId);
+    const newBusiness = await business_model_1.default.findByIdAndUpdate({
+        ...business,
+        stars: newAvg,
+    });
 }
 module.exports = { getReviews, createReview, getAvarageReviews, anonymReview };

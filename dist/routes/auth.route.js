@@ -5,12 +5,16 @@ const router = express.Router();
 const { register, login } = require("../controllers/auth.controller");
 const { getUser } = require("../controllers/user.controller");
 const { verifyToken } = require("../middleware/auth.middleware");
+const { verifyGoogle, signWithGoogle, } = require("../controllers/google.controller");
 // Type assertions for the imported functions
 const typedRegister = register;
 const typedLogin = login;
 const typedGetUser = getUser;
 const typedVerifyToken = verifyToken;
+const typedSignGoogle = signWithGoogle;
+const typedVerifyGoogle = verifyGoogle;
 router.get("/login", typedVerifyToken, typedGetUser);
 router.post("/register", typedRegister);
 router.post("/login", typedLogin);
+router.post("/google", typedVerifyGoogle, typedSignGoogle);
 module.exports = router;
