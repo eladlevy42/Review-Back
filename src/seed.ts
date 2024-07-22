@@ -15,18 +15,6 @@ const seedDatabase = async () => {
     await mongoose.connect(mongoURI);
     console.log("MongoDB connected!");
 
-    // Drop the index on the username field if it exists
-    try {
-      await mongoose.connection.collection("users").dropIndex("username_1");
-      console.log("Dropped index on username field.");
-    } catch (error: any) {
-      if (error.codeName === "IndexNotFound") {
-        console.log("Index on username field not found.");
-      } else {
-        throw error;
-      }
-    }
-
     // Clear existing data
     await Business.deleteMany({});
     await Review.deleteMany({});
@@ -68,6 +56,12 @@ const seedDatabase = async () => {
         fullName: "Oliver Taylor",
         email: "oliver@example.com",
         password: "password123",
+      },
+      {
+        _id: new mongoose.Types.ObjectId("424242424242424242424242"),
+        fullName: "Anonymous",
+        email: "anonymous@example.com",
+        password: "youWillNeverKnow42",
       },
     ];
 
@@ -197,6 +191,7 @@ const seedDatabase = async () => {
           content,
           business: business._id,
           user: user._id,
+          userFullName: user.fullName,
           stars,
           likes,
           createdAt: new Date(),

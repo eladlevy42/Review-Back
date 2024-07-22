@@ -1,6 +1,7 @@
 const { Mongoose, default: mongoose } = require("mongoose");
 import Review from "../models/review.model";
 import { Request, Response } from "express";
+import User from "../models/user.model";
 
 interface ReviewsReq extends Request {
   body: {
@@ -12,22 +13,54 @@ interface ReviewsReq extends Request {
 }
 interface AddReviewReq extends Request {
   businessId: string;
-  userId: String;
+  userId: string;
   query: { id: string };
   body: Review;
 }
 
 interface Review {
   _id: string;
-  user: String;
+  user: string;
+  userFullName: string | undefined;
   business: String;
   stars: string;
   content: String;
   likes: [String];
   createdAt: Date;
 }
-interface reqAvg {
-  params: { id: string };
+
+// Function to get user full name by ID
+async function getUserFullName(id: string): Promise<string | undefined> {
+  try {
+    const user = await User.findById(id);
+    if (user) {
+      console.log(user.fullName);
+      return user.fullName;
+    }
+  } catch (err: any) {
+    console.log(err.message);
+  }
+}
+
+// Function to handle anonymous reviews
+async function anonymReview(req: AddReviewReq, res: Response) {
+  let review = req.body;
+  review.business = req.businessId;
+  review.user = "424242424242424242424242";
+  review.createdAt = new Date();
+  console.log(review);
+
+  try {
+    review.userFullName = await getUserFullName(review.user);
+    const reviewToAdd = new Review(review);
+    const savedReview = await reviewToAdd.save();
+    console.log(savedReview);
+    res.status(200).send({ message: "Review added successfully", review });
+  } catch (err: any) {
+    res
+      .status(500)
+      .send({ message: "Error adding review", error: err.message });
+  }
 }
 
 async function getReviews(req: ReviewsReq, res: Response) {
@@ -53,8 +86,9 @@ async function createReview(req: AddReviewReq, res: Response) {
   review.createdAt = new Date();
   review.user = req.userId;
   review.business = req.businessId;
-  const reviewToAdd = new Review(review);
   try {
+    review.userFullName = await getUserFullName(review.user);
+    const reviewToAdd = new Review(review);
     const savedReview = await reviewToAdd.save();
     console.log(savedReview);
     res.status(201).json(savedReview);
@@ -94,4 +128,4 @@ async function getAvarageReviews(req: ReviewsReq, res: Response) {
     return res.status(500).json({ err: err.message });
   }
 }
-module.exports = { getReviews, createReview, getAvarageReviews };
+module.exports = { getReviews, createReview, getAvarageReviews, anonymReview };
