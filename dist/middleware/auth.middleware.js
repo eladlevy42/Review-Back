@@ -3,6 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.verifyToken = verifyToken;
+exports.verifyUser = verifyUser;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const review_model_1 = __importDefault(require("../models/review.model"));
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -40,4 +42,3 @@ async function verifyUser(req, res, next) {
     }
     next();
 }
-module.exports = { verifyToken, verifyUser };

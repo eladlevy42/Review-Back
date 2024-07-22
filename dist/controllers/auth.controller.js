@@ -34,9 +34,7 @@ async function register(req, res) {
 async function login(req, res) {
     try {
         const { email, password } = req.body;
-        console.log(email);
         const user = await user_model_1.User.findOne({ email });
-        console.log(user);
         if (!user) {
             console.log("No registered email");
             return res.status(401).json({ error: "No registered email" });

@@ -160,7 +160,6 @@ const seedDatabase = async () => {
             },
         ];
         const createdBusinesses = await business_model_1.default.insertMany(businesses);
-        console.log("Created businesses:", createdBusinesses.map((b) => ({ _id: b._id, name: b.name })));
         // Create reviews
         const reviewContents = [
             "Excellent service!",
@@ -188,8 +187,6 @@ const seedDatabase = async () => {
                     likes,
                     createdAt: new Date(),
                 };
-                console.log(review.business);
-                console.log("Review object:", JSON.stringify(review, null, 2));
                 reviews.push(review);
             }
         });
@@ -211,7 +208,6 @@ const seedDatabase = async () => {
             const avg = (count / reviewaBusiness.length).toFixed(1);
             try {
                 await business_model_1.default.findByIdAndUpdate(business._id, { stars: avg });
-                console.log("new stars:" + avg);
             }
             catch (err) {
                 console.log(err.message);
