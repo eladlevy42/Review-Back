@@ -3,7 +3,8 @@ import Review from "../models/review.model";
 import { Request, Response } from "express";
 import { User } from "../models/user.model";
 import Business from "../models/business.model";
-
+import { io } from "../index";
+import { ObjectId } from "mongoose";
 interface ReviewsReq extends Request {
   body: {
     business: String;
@@ -19,8 +20,8 @@ interface AddReviewReq extends Request {
   body: Review;
 }
 
-interface Review {
-  _id: string;
+interface Review extends Document {
+  id?: string;
   user: string;
   userFullName: string | undefined;
   business: String;
@@ -29,7 +30,17 @@ interface Review {
   likes: [String];
   createdAt: Date;
 }
+interface IReview {
+  user: ObjectId | string;
+  userFullName?: string;
+  business: ObjectId | string;
+  stars: number;
+  content: string;
+  likes: ObjectId[];
+  createdAt: Date;
+}
 
+let reviewTotal: any[] = [];
 // Function to get user full name by ID
 async function getUserFullName(id: string): Promise<string | undefined> {
   try {
@@ -54,8 +65,10 @@ async function anonymReview(req: AddReviewReq, res: Response) {
     review.userFullName = await getUserFullName(review.user);
     const reviewToAdd = new Review(review);
     const savedReview = await reviewToAdd.save();
+    console.log(reviewToAdd, typeof savedReview);
     getAvarageReviews(req.businessId);
-
+    reviewTotal.push(savedReview);
+    io.emit("getReviews", { reviewTotal, businessId: req.businessId });
     res.status(200).send({ message: "Review added successfully", review });
   } catch (err: any) {
     res
@@ -75,7 +88,9 @@ async function getReviews(req: ReviewsReq, res: Response) {
     business: businessId,
   };
   try {
-    const reviews = await Review.find(criteriaObj);
+    const reviews: Review[] = await Review.find(criteriaObj);
+    reviewTotal = reviews;
+    io.emit("getReviews", { reviewTotal, businessId: req.businessId });
     res.json({ reviews });
   } catch (err: any) {
     res.status(500).json({ message: err.message });
@@ -91,8 +106,9 @@ async function createReview(req: AddReviewReq, res: Response) {
     review.userFullName = await getUserFullName(review.user);
     const reviewToAdd = new Review(review);
     const savedReview = await reviewToAdd.save();
-
+    reviewTotal.push(savedReview);
     getAvarageReviews(req.businessId);
+    io.emit("getReviews", { reviewTotal, businessId: req.businessId });
     res.status(201).json(savedReview);
   } catch (err: any) {
     console.log(
