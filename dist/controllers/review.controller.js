@@ -112,6 +112,8 @@ async function updateReviewAvg(businessId, newAvg) {
     try {
         const business = await business_model_1.default.findById(businessId);
         const newBusiness = await business_model_1.default.findByIdAndUpdate(businessId, { stars: newAvg }, { new: true, runValidators: true });
+        index_1.io.emit("newAvg", { businessId, newAvg });
+        console.log(newAvg);
     }
     catch (err) {
         console.log(err);
