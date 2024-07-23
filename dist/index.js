@@ -28,10 +28,12 @@ connectDB();
 const reviewRoutes = require("./routes/review.route");
 const businessRoutes = require("./routes/business.route");
 const authRoutes = require("./routes/auth.route");
+const contactRoutes = require("./routes/contact.route");
 // Apply routes
 app.use("/api/review", reviewRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/business", businessRoutes);
+app.use("api/contact", contactRoutes);
 app.use(express_1.default.static("public"));
 // Start server
 server.listen(PORT, () => {

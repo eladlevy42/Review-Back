@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import http, { createServer, Server } from "http";
 import { Server as SocketIOServer } from "socket.io";
+import contactRoutes from "./routes/contact.route";
 
 dotenv.config(); // Load config
 
@@ -33,6 +34,7 @@ const authRoutes = require("./routes/auth.route");
 app.use("/api/review", reviewRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/business", businessRoutes);
+app.use("/api/contact", contactRoutes);
 app.use(express.static("public"));
 
 // Start server
