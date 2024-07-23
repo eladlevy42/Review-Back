@@ -1,22 +1,29 @@
 import { Request, Response } from "express";
-
+import multer, { Multer } from "multer";
+import { v2 as cloudinaryV2 } from "cloudinary";
+import fs from "fs";
+import dotenv from "dotenv";
 import Business from "../models/business.model";
 
-const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
-const SALT_ROUNDS = 10;
+dotenv.config();
 
-interface requestGetBusiness {
-  query: {
-    page: string;
-  };
-}
-interface requestCreateBusiness {
+cloudinaryV2.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
+
+const upload: Multer = multer({ dest: "uploads/" });
+
+interface RequestCreateBusiness extends Request {
   body: {
     name: string;
     description: string;
     category: string;
+    imageUrl?: string;
   };
   userId: string;
+  file?: Express.Multer.File;
 }
 
 async function getBusiness(req: Request, res: Response) {
@@ -47,17 +54,30 @@ async function getBusiness(req: Request, res: Response) {
     res.status(500).json({ Error: err.message });
   }
 }
-export default getBusiness;
 
-async function createBusiness(req: requestCreateBusiness, res: Response) {
-  const business = req.body;
+async function createBusiness(
+  req: RequestCreateBusiness,
+  res: Response
+): Promise<void> {
+  const businessData = req.body;
+
   try {
-    const newBusiness = new Business(business);
+    if (req.file) {
+      const result = await cloudinaryV2.uploader.upload(req.file.path);
+      businessData.imageUrl = result.secure_url;
+      fs.unlinkSync(req.file.path); // Remove the file from the local storage after uploading to Cloudinary
+    }
+    const newBusiness = new Business(businessData);
     await newBusiness.save();
-    res.status(200).json({ message: "new Business Saved Succesfully" });
+    res
+      .status(200)
+      .json({ message: "New Business Saved Successfully", newBusiness });
   } catch (err: any) {
-    return res.status(400).json({ error: "Create new Business failed" });
+    console.log(err);
+    res
+      .status(400)
+      .json({ error: "Create new Business failed", message: err.message });
   }
 }
 
-module.exports = { getBusiness, createBusiness };
+export { getBusiness, createBusiness, upload };

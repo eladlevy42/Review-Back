@@ -3,9 +3,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getBusiness = getBusiness;
+exports.createBusiness = createBusiness;
+const multer_1 = __importDefault(require("multer"));
+const cloudinary_1 = require("cloudinary");
+const fs_1 = __importDefault(require("fs"));
+const dotenv_1 = __importDefault(require("dotenv"));
 const business_model_1 = __importDefault(require("../models/business.model"));
-const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
-const SALT_ROUNDS = 10;
+dotenv_1.default.config();
+cloudinary_1.v2.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET,
+});
 async function getBusiness(req, res) {
     let page = parseInt(req.query.page) || 1;
     const name = req.query.name;
@@ -33,16 +43,25 @@ async function getBusiness(req, res) {
         res.status(500).json({ Error: err.message });
     }
 }
-exports.default = getBusiness;
+const upload = (0, multer_1.default)({ dest: "uploads/" });
 async function createBusiness(req, res) {
-    const business = req.body;
+    const businessData = req.body;
+    upload.single("image");
     try {
-        const newBusiness = new business_model_1.default(business);
+        if (req.file) {
+            const result = await cloudinary_1.v2.uploader.upload(req.file.path);
+            businessData.imageUrl = result.secure_url;
+            fs_1.default.unlinkSync(req.file.path); // Remove the file from the local storage after uploading to Cloudinary
+        }
+        const newBusiness = new business_model_1.default(businessData);
         await newBusiness.save();
-        res.status(200).json({ message: "new Business Saved Succesfully" });
+        res
+            .status(200)
+            .json({ message: "New Business Saved Successfully", newBusiness });
     }
     catch (err) {
-        return res.status(400).json({ error: "Create new Business failed" });
+        res
+            .status(400)
+            .json({ error: "Create new Business failed", message: err.message });
     }
 }
-module.exports = { getBusiness, createBusiness };
