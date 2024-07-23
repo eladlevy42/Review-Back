@@ -5,7 +5,7 @@ import Review from "./models/review.model";
 import { User } from "./models/user.model";
 import dotenv from "dotenv";
 import { Types } from "mongoose";
-import { login } from "./controllers/auth.controller";
+
 // Load environment variables from .env file
 dotenv.config();
 
@@ -44,20 +44,16 @@ const seedDatabase = async () => {
         password: "password123",
       },
       {
-        fullName: "Michael Brown",
-        email: "michael@example.com",
-        password: "password123",
+        fullName: "Yuval Maderer",
+        email: "yuval@maderer.com",
+        password: "1234",
       },
       {
-        fullName: "Emma Wilson",
-        email: "emma@example.com",
-        password: "password123",
+        fullName: "Elad Levy Wilson",
+        email: "elad@levy.com",
+        password: "1234",
       },
-      {
-        fullName: "Oliver Taylor",
-        email: "oliver@example.com",
-        password: "password123",
-      },
+      { fullName: "Omer Sidi", email: "omer@sidi.com", password: "1234" },
       {
         _id: new mongoose.Types.ObjectId("424242424242424242424242"),
         fullName: "Anonymous",
@@ -80,9 +76,12 @@ const seedDatabase = async () => {
       email: user.email,
       password: user.password,
     }));
+
+    // Function to generate new ObjectId
     function generateObjectId(): Types.ObjectId {
       return new Types.ObjectId();
     }
+
     // Create businesses
     const businesses = [
       {
@@ -175,6 +174,130 @@ const seedDatabase = async () => {
           "Grocery chain with a variety of domestic & imported foods & beverages, plus housewares.",
         category: "Grocery",
       },
+      {
+        _id: generateObjectId(),
+        name: "Whole Foods Market",
+        description:
+          "Supermarket chain offering organic foods and products, with a focus on health and sustainability.",
+        category: "Grocery",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Walmart",
+        description:
+          "Multinational retail corporation that operates a chain of hypermarkets, discount department stores, and grocery stores.",
+        category: "Retail",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Amazon",
+        description:
+          "American multinational technology company which focuses on e-commerce, cloud computing, digital streaming, and artificial intelligence.",
+        category: "Tech",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Google",
+        description:
+          "American multinational technology company that specializes in Internet-related services and products.",
+        category: "Tech",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Facebook",
+        description:
+          "American online social media and social networking service owned by Meta Platforms.",
+        category: "Tech",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Nike",
+        description:
+          "American multinational corporation that designs, manufactures, and sells footwear, apparel, equipment, and accessories.",
+        category: "Fashion",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Adidas",
+        description:
+          "German multinational corporation that designs and manufactures shoes, clothing, and accessories.",
+        category: "Fashion",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Puma",
+        description:
+          "German multinational corporation that designs and manufactures athletic and casual footwear, apparel, and accessories.",
+        category: "Fashion",
+      },
+      {
+        _id: generateObjectId(),
+        name: "McDonald's",
+        description:
+          "American fast food company that operates and franchises a chain of restaurants.",
+        category: "Food & Drink",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Burger King",
+        description:
+          "American multinational chain of hamburger fast food restaurants.",
+        category: "Food & Drink",
+      },
+      {
+        _id: generateObjectId(),
+        name: "KFC",
+        description:
+          "American fast food restaurant chain that specializes in fried chicken.",
+        category: "Food & Drink",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Subway",
+        description:
+          "American multinational fast food restaurant franchise that primarily sells submarine sandwiches, wraps, salads, and drinks.",
+        category: "Food & Drink",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Pizza Hut",
+        description:
+          "American multinational restaurant chain and international franchise known for its Italian-American cuisine including pizza and pasta.",
+        category: "Food & Drink",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Domino's Pizza",
+        description: "American multinational pizza restaurant chain.",
+        category: "Food & Drink",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Taco Bell",
+        description:
+          "American-based chain of fast food restaurants that serves a variety of Mexican-inspired foods.",
+        category: "Food & Drink",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Dunkin'",
+        description: "American multinational coffee and doughnut company.",
+        category: "Food & Drink",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Costco",
+        description:
+          "American multinational corporation which operates a chain of membership-only warehouse clubs.",
+        category: "Retail",
+      },
+      {
+        _id: generateObjectId(),
+        name: "Target",
+        description:
+          "American retail corporation, the 8th-largest retailer in the United States.",
+        category: "Retail",
+      },
     ];
 
     const createdBusinesses = await Business.insertMany(businesses);
@@ -216,12 +339,8 @@ const seedDatabase = async () => {
     });
 
     // Use create instead of insertMany to trigger validation for each document
-    try {
-      for (const review of reviews) {
-        const createdReview = await Review.create(review);
-      }
-    } catch (error) {
-      console.error("Error creating review:", error);
+    for (const review of reviews) {
+      await Review.create(review);
     }
 
     for (const business of createdBusinesses) {
