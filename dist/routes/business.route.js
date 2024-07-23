@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const { getBusiness, createBusiness, } = require("../controllers/business.controller");
-const auth_middleware_1 = require("../middleware/auth.middleware");
-const router = (0, express_1.Router)();
-const typedVerifyToken = auth_middleware_1.verifyToken;
+const express = require("express");
+const router = express.Router();
+const { getBusiness, createBusiness, upload, } = require("../controllers/business.controller");
+const { verifyToken } = require("../middleware/auth.middleware");
+// Type assertions for the imported functions
 const typedGetBusiness = getBusiness;
+const typedVerifyToken = verifyToken;
 const typedCreateBusiness = createBusiness;
 router.get("/", typedGetBusiness);
-router.post("/", typedVerifyToken, typedCreateBusiness);
-exports.default = router;
+router.post("/", typedVerifyToken, upload.single("image"), typedCreateBusiness);
+module.exports = router;

@@ -5,6 +5,7 @@ interface IBusiness {
   description: string;
   category: string;
   imageUrl?: string;
+  stars: String;
 }
 
 const businessSchema = new Schema<IBusiness>(
@@ -13,6 +14,7 @@ const businessSchema = new Schema<IBusiness>(
     description: { type: String, required: true },
     category: { type: String, required: true },
     imageUrl: { type: String, required: true },
+    stars: { type: String, default: 0 },
   },
   {
     timestamps: true,
