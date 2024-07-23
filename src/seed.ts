@@ -89,7 +89,8 @@ const seedDatabase = async () => {
         description:
           "Coffeehouse chain known for its signature roasts, light bites and WiFi availability.",
         category: "Food & Drink",
-        imageUrl: "https://www.starbucks.com/static/images/global/logo.svg",
+        imageUrl:
+          "https://1000logos.net/wp-content/uploads/2023/04/Starbucks-logo.png",
       },
       {
         _id: generateObjectId(),
@@ -98,7 +99,7 @@ const seedDatabase = async () => {
           "American fast food company that operates and franchises a chain of restaurants.",
         category: "Food & Drink",
         imageUrl:
-          "https://logos-world.net/wp-content/uploads/2020/04/McDonalds-Logo-700x394.png",
+          "https://upload.wikimedia.org/wikipedia/commons/4/4b/McDonald%27s_logo.svg",
       },
       {
         _id: generateObjectId(),
@@ -107,7 +108,7 @@ const seedDatabase = async () => {
           "American multinational chain of hamburger fast food restaurants.",
         category: "Food & Drink",
         imageUrl:
-          "https://upload.wikimedia.org/wikipedia/commons/7/72/Burger_King_logo.svg",
+          "https://logowik.com/content/uploads/images/burger-king-new-20218389.jpg",
       },
       {
         _id: generateObjectId(),
@@ -116,7 +117,7 @@ const seedDatabase = async () => {
           "American fast food restaurant chain that specializes in fried chicken.",
         category: "Food & Drink",
         imageUrl:
-          "https://upload.wikimedia.org/wikipedia/commons/0/0d/KFC_logo.svg",
+          "https://seeklogo.com/images/K/kfc-logo-A232F2E6D1-seeklogo.com.png",
       },
       {
         _id: generateObjectId(),
@@ -125,7 +126,7 @@ const seedDatabase = async () => {
           "American multinational restaurant chain and international franchise known for its Italian-American cuisine including pizza and pasta.",
         category: "Food & Drink",
         imageUrl:
-          "https://upload.wikimedia.org/wikipedia/commons/d/d2/Pizza_Hut_logo.svg",
+          "https://www.logo-designer.co/storage/2014/11/Pizza-Hut-New-Logo-Design-6.jpg",
       },
       {
         _id: generateObjectId(),
@@ -133,8 +134,7 @@ const seedDatabase = async () => {
         description:
           "Chain retailer with a large array of brand-name electronics, computers, appliances & more.",
         category: "Electronics",
-        imageUrl:
-          "https://upload.wikimedia.org/wikipedia/commons/1/10/Best_Buy_logo_2018.svg",
+        imageUrl: "https://cdn.worldvectorlogo.com/logos/best-buy-1.svg",
       },
       {
         _id: generateObjectId(),
@@ -143,7 +143,7 @@ const seedDatabase = async () => {
           "Retail stores owned and operated by Apple Inc. that sells Apple products and provide tech support.",
         category: "Electronics",
         imageUrl:
-          "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/625px-Apple_logo_black.svg.png",
       },
       {
         _id: generateObjectId(),
@@ -152,7 +152,7 @@ const seedDatabase = async () => {
           "Electronics retailer selling computers, software & consumer electronics, plus repair services.",
         category: "Electronics",
         imageUrl:
-          "https://upload.wikimedia.org/wikipedia/en/4/49/Frys_Electronics_logo.svg",
+          "https://cdn.worldvectorlogo.com/logos/fry-s-electronics-1.svg",
       },
       {
         _id: generateObjectId(),
@@ -160,7 +160,7 @@ const seedDatabase = async () => {
         description: "Retailer of computer products and consumer electronics.",
         category: "Electronics",
         imageUrl:
-          "https://upload.wikimedia.org/wikipedia/en/0/0c/Micro_Center_Logo.svg",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJG_vtJ_l0mtzLB1M21_w21X-QKnk3S60BXw&s",
       },
       {
         _id: generateObjectId(),
@@ -169,7 +169,7 @@ const seedDatabase = async () => {
           "Chain of electronics retail stores offering a variety of electronics and accessories.",
         category: "Electronics",
         imageUrl:
-          "https://upload.wikimedia.org/wikipedia/commons/6/64/RadioShack_logo.svg",
+          "https://seeklogo.com/images/R/RadioShack-logo-9615A35B0F-seeklogo.com.png",
       },
       {
         _id: generateObjectId(),
@@ -178,7 +178,7 @@ const seedDatabase = async () => {
           "Bookseller stocking housewares, plus a range of books, eBooks, DVDs & magazines.",
         category: "Books",
         imageUrl:
-          "https://upload.wikimedia.org/wikipedia/commons/5/5a/Barnes_and_Noble_201x_logo.svg",
+          "https://banner2.cleanpng.com/20180821/tzo/kisspng-barnes-noble-logo-brand-product-design-book-barnes-and-noble-logo-png-transparent-www-galleryh-5b7ccbb8ebb8c6.7116184915349052729655.jpg",
       },
       {
         _id: generateObjectId(),
@@ -187,7 +187,7 @@ const seedDatabase = async () => {
           "Book retailer that sells a variety of books, magazines, collectibles, and toys.",
         category: "Books",
         imageUrl:
-          "https://upload.wikimedia.org/wikipedia/en/a/a1/Books-A-Million_logo.svg",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKpGWQC-BbkFaT9tZdEoU6p2OChpbYhMkHJw&s",
       },
     ];
 
@@ -224,7 +224,6 @@ const seedDatabase = async () => {
           likes,
           createdAt: new Date(),
         };
-
         reviews.push(review);
       }
     });

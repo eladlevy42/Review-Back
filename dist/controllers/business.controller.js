@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.upload = void 0;
 exports.getBusiness = getBusiness;
 exports.createBusiness = createBusiness;
 const multer_1 = __importDefault(require("multer"));
@@ -16,6 +17,8 @@ cloudinary_1.v2.config({
     api_key: process.env.API_KEY,
     api_secret: process.env.API_SECRET,
 });
+const upload = (0, multer_1.default)({ dest: "uploads/" });
+exports.upload = upload;
 async function getBusiness(req, res) {
     let page = parseInt(req.query.page) || 1;
     const name = req.query.name;
@@ -43,10 +46,8 @@ async function getBusiness(req, res) {
         res.status(500).json({ Error: err.message });
     }
 }
-const upload = (0, multer_1.default)({ dest: "uploads/" });
 async function createBusiness(req, res) {
     const businessData = req.body;
-    upload.single("image");
     try {
         if (req.file) {
             const result = await cloudinary_1.v2.uploader.upload(req.file.path);
@@ -60,6 +61,7 @@ async function createBusiness(req, res) {
             .json({ message: "New Business Saved Successfully", newBusiness });
     }
     catch (err) {
+        console.log(err);
         res
             .status(400)
             .json({ error: "Create new Business failed", message: err.message });
