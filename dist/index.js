@@ -9,6 +9,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const http_1 = require("http");
 const socket_io_1 = require("socket.io");
+const contact_route_1 = __importDefault(require("./routes/contact.route"));
 dotenv_1.default.config(); // Load config
 const app = (0, express_1.default)();
 const server = (0, http_1.createServer)(app);
@@ -28,12 +29,11 @@ connectDB();
 const reviewRoutes = require("./routes/review.route");
 const businessRoutes = require("./routes/business.route");
 const authRoutes = require("./routes/auth.route");
-const contactRoutes = require("./routes/contact.route");
 // Apply routes
 app.use("/api/review", reviewRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/business", businessRoutes);
-app.use("api/contact", contactRoutes);
+app.use("/api/contact", contact_route_1.default);
 app.use(express_1.default.static("public"));
 // Start server
 server.listen(PORT, () => {
