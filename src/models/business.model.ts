@@ -1,17 +1,24 @@
-import { Schema, model, Document, ObjectId } from "mongoose";
-interface IBusiness extends Document {
-  _id: ObjectId;
+import { Schema, model } from "mongoose";
+
+interface IBusiness {
   name: string;
   description: string;
   category: string;
-  stars: number;
+  imageUrl?: string;
 }
-const businessSchema = new Schema<IBusiness>({
-  _id: { type: Schema.ObjectId },
-  name: { type: String, required: true, unique: true },
-  description: { type: String, required: true },
-  category: { type: String, required: true },
-  stars: { type: Number, default: 0 },
-});
+
+const businessSchema = new Schema<IBusiness>(
+  {
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    category: { type: String, required: true },
+    imageUrl: { type: String, required: true },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 const Business = model<IBusiness>("Business", businessSchema);
+
 export default Business;
