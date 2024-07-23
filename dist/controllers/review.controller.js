@@ -7,6 +7,8 @@ const { Mongoose, default: mongoose } = require("mongoose");
 const review_model_1 = __importDefault(require("../models/review.model"));
 const user_model_1 = require("../models/user.model");
 const business_model_1 = __importDefault(require("../models/business.model"));
+const index_1 = require("../index");
+let reviewTotal = [];
 // Function to get user full name by ID
 async function getUserFullName(id) {
     try {
@@ -30,7 +32,10 @@ async function anonymReview(req, res) {
         review.userFullName = await getUserFullName(review.user);
         const reviewToAdd = new review_model_1.default(review);
         const savedReview = await reviewToAdd.save();
+        console.log(reviewToAdd, typeof savedReview);
         getAvarageReviews(req.businessId);
+        reviewTotal.push(savedReview);
+        index_1.io.emit("getReviews", { reviewTotal, businessId: req.businessId });
         res.status(200).send({ message: "Review added successfully", review });
     }
     catch (err) {
@@ -51,6 +56,8 @@ async function getReviews(req, res) {
     };
     try {
         const reviews = await review_model_1.default.find(criteriaObj);
+        reviewTotal = reviews;
+        index_1.io.emit("getReviews", { reviewTotal, businessId: req.businessId });
         res.json({ reviews });
     }
     catch (err) {
@@ -66,7 +73,9 @@ async function createReview(req, res) {
         review.userFullName = await getUserFullName(review.user);
         const reviewToAdd = new review_model_1.default(review);
         const savedReview = await reviewToAdd.save();
+        reviewTotal.push(savedReview);
         getAvarageReviews(req.businessId);
+        index_1.io.emit("getReviews", { reviewTotal, businessId: req.businessId });
         res.status(201).json(savedReview);
     }
     catch (err) {
