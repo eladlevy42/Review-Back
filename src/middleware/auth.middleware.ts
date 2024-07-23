@@ -2,10 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import Review from "../models/review.model";
 import mongoose from "mongoose";
+import { Server as SocketIOServer } from "socket.io";
 const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
 
 interface AuthRequest extends Request {
-  userId?: string;
+  params: { id: string };
+  userId: string;
+  io?: SocketIOServer;
+  body: { reviewId: string };
 }
 
 function verifyToken(
@@ -53,4 +57,5 @@ async function verifyUser(
   }
   next();
 }
-module.exports = { verifyToken, verifyUser };
+
+export { verifyToken, verifyUser, AuthRequest };

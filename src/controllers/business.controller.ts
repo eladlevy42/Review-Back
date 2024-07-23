@@ -18,21 +18,36 @@ interface requestCreateBusiness {
   };
   userId: string;
 }
-async function getBusiness(req: requestGetBusiness, res: Response) {
-  let page = parseInt(req.query.page) || 0;
-  if (page < 1) {
-    page = 1;
+
+async function getBusiness(req: Request, res: Response) {
+  let page = parseInt(req.query.page as string) || 1;
+  const name = req.query.name as string;
+  const category = req.query.category as string;
+  const minRating = parseFloat(req.query.minRating as string) || 0;
+
+  const query: any = {};
+  if (name) {
+    query.name = { $regex: name, $options: "i" }; // Case-insensitive regex search
   }
+  if (category) {
+    query.category = category;
+  }
+  if (minRating) {
+    query.stars = { $gte: minRating };
+  }
+
   try {
-    const business = await Business.find()
+    const totalBusinesses = await Business.countDocuments(query);
+    const business = await Business.find(query)
       .skip((page - 1) * 10)
       .limit(10);
-    res.status(200).json({ business });
+    res.status(200).json({ business, totalBusinesses });
   } catch (err: any) {
     console.log(err);
     res.status(500).json({ Error: err.message });
   }
 }
+export default getBusiness;
 
 async function createBusiness(req: requestCreateBusiness, res: Response) {
   const business = req.body;
