@@ -26,13 +26,11 @@ async function anonymReview(req, res) {
     review.business = req.businessId;
     review.user = "424242424242424242424242";
     review.createdAt = new Date();
-    console.log(review);
     try {
         review.userFullName = await getUserFullName(review.user);
         const reviewToAdd = new review_model_1.default(review);
         const savedReview = await reviewToAdd.save();
         getAvarageReviews(req.businessId);
-        console.log(savedReview);
         res.status(200).send({ message: "Review added successfully", review });
     }
     catch (err) {
@@ -68,7 +66,6 @@ async function createReview(req, res) {
         review.userFullName = await getUserFullName(review.user);
         const reviewToAdd = new review_model_1.default(review);
         const savedReview = await reviewToAdd.save();
-        console.log(savedReview);
         getAvarageReviews(req.businessId);
         res.status(201).json(savedReview);
     }
@@ -87,14 +84,12 @@ async function createReview(req, res) {
 async function getAvarageReviews(id) {
     try {
         const reviews = await review_model_1.default.find({ business: id });
-        console.log(reviews);
         if (reviews.length > 0) {
             let count = 0;
             reviews.forEach((review) => {
                 count += review.stars;
             });
             const avg = parseFloat((count / reviews.length).toFixed(1));
-            console.log(avg);
             updateReviewAvg(id, avg);
             return;
         }
@@ -105,10 +100,12 @@ async function getAvarageReviews(id) {
     }
 }
 async function updateReviewAvg(businessId, newAvg) {
-    const business = await business_model_1.default.findById(businessId);
-    const newBusiness = await business_model_1.default.findByIdAndUpdate({
-        ...business,
-        stars: newAvg,
-    });
+    try {
+        const business = await business_model_1.default.findById(businessId);
+        const newBusiness = await business_model_1.default.findByIdAndUpdate(businessId, { stars: newAvg }, { new: true, runValidators: true });
+    }
+    catch (err) {
+        console.log(err);
+    }
 }
 module.exports = { getReviews, createReview, getAvarageReviews, anonymReview };
