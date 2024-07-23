@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const express = require("express");
-const router = express.Router();
+const express_1 = require("express");
 const { getBusiness, createBusiness, } = require("../controllers/business.controller");
-const { verifyToken } = require("../middleware/auth.middleware");
-const typedVerifyToken = verifyToken;
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const router = (0, express_1.Router)();
+const typedVerifyToken = auth_middleware_1.verifyToken;
 const typedGetBusiness = getBusiness;
 const typedCreateBusiness = createBusiness;
 router.get("/", typedGetBusiness);
 router.post("/", typedVerifyToken, typedCreateBusiness);
-module.exports = router;
+exports.default = router;
