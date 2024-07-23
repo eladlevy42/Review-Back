@@ -151,6 +151,8 @@ async function updateReviewAvg(businessId: string, newAvg: Number) {
       { stars: newAvg },
       { new: true, runValidators: true }
     );
+    io.emit("newAvg", { businessId, newAvg });
+    console.log(newAvg);
   } catch (err: any) {
     console.log(err);
   }
