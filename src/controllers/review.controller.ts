@@ -59,17 +59,17 @@ async function anonymReview(req: AddReviewReq, res: Response) {
   let review = req.body;
   review.business = req.businessId;
   review.user = "424242424242424242424242";
-  review.createdAt = new Date();
 
+  review.createdAt = new Date();
   try {
-    review.userFullName = await getUserFullName(review.user);
+    review.userFullName = "Anonymous";
     const reviewToAdd = new Review(review);
     const savedReview = await reviewToAdd.save();
     console.log(reviewToAdd, typeof savedReview);
     getAvarageReviews(req.businessId);
     reviewTotal.push(savedReview);
     io.emit("getReviews", { reviewTotal, businessId: req.businessId });
-    res.status(200).send({ message: "Review added successfully", review });
+    res.status(201).json(savedReview);
   } catch (err: any) {
     res
       .status(500)
