@@ -21,6 +21,7 @@ interface RequestCreateBusiness extends Request {
     description: string;
     category: string;
     imageUrl?: string;
+    stars?: string;
   };
   userId: string;
   file?: Express.Multer.File;
@@ -60,7 +61,7 @@ async function createBusiness(
   res: Response
 ): Promise<void> {
   const businessData = req.body;
-
+  businessData.stars = "0";
   try {
     if (req.file) {
       const result = await cloudinaryV2.uploader.upload(req.file.path);
