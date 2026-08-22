@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import Review from "../models/review.model";
 import mongoose from "mongoose";
 import { Server as SocketIOServer } from "socket.io";
-const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
+import { JWT_SECRET } from "../config/env";
 
 interface AuthRequest extends Request {
   params: { id: string };

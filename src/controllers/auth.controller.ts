@@ -4,7 +4,7 @@ import { User } from "../models/user.model"; // Ensure correct import
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
+import { JWT_SECRET } from "../config/env";
 
 const SALT_ROUNDS = 10;
 

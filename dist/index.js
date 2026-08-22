@@ -15,7 +15,8 @@ const app = (0, express_1.default)();
 const server = (0, http_1.createServer)(app);
 exports.io = new socket_io_1.Server(server, {
     cors: {
-        origin: "*",
+        // Previously "*", which let any origin open a socket to this server.
+        origin: process.env.CLIENT_ORIGIN ?? "http://localhost:5173",
     },
 });
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
