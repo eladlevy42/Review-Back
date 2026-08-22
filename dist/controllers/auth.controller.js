@@ -8,7 +8,7 @@ exports.login = login;
 const user_model_1 = require("../models/user.model"); // Ensure correct import
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
+const env_1 = require("../config/env");
 const SALT_ROUNDS = 10;
 async function register(req, res) {
     try {
@@ -44,7 +44,7 @@ async function login(req, res) {
             console.log("Wrong password");
             return res.status(401).json({ error: "Wrong password" });
         }
-        const token = jsonwebtoken_1.default.sign({ userId: user._id }, JWT_SECRET, {
+        const token = jsonwebtoken_1.default.sign({ userId: user._id }, env_1.JWT_SECRET, {
             expiresIn: "24h",
         });
         console.log("loggedIn");

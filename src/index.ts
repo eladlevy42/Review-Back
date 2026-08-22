@@ -11,7 +11,8 @@ const app = express();
 const server: Server = createServer(app);
 export const io = new SocketIOServer(server, {
   cors: {
-    origin: "*",
+    // Previously "*", which let any origin open a socket to this server.
+    origin: process.env.CLIENT_ORIGIN ?? "http://localhost:5173",
   },
 });
 
