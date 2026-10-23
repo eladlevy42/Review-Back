@@ -48,6 +48,7 @@ async function getBusiness(req, res) {
 }
 async function createBusiness(req, res) {
     const businessData = req.body;
+    businessData.stars = "0";
     try {
         if (req.file) {
             const result = await cloudinary_1.v2.uploader.upload(req.file.path);

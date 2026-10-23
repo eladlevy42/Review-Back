@@ -1,12 +1,20 @@
 import { NextFunction, Request, Response } from "express";
-import { jwtDecode } from "jwt-decode";
+import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
 import { User, IUser } from "../models/user.model";
 import { Document } from "mongoose";
 
 const SALT_ROUNDS = 10;
-const { JWT_SECRET } = process.env;
+import { JWT_SECRET } from "../config/env";
+
+// Google sign-in credentials must be verified against Google, not merely
+// decoded. A decoded-only JWT is attacker-controlled: anyone can craft a
+// payload with someone else's email and be logged in as them.
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const googleClient = GOOGLE_CLIENT_ID
+  ? new OAuth2Client(GOOGLE_CLIENT_ID)
+  : null;
 
 interface GoogleCredential {
   email: string;
@@ -34,11 +42,35 @@ async function verifyGoogle(
 
   let credentialDecoded: GoogleCredential;
 
+  if (!googleClient) {
+    // Fail closed: without a client ID there is no way to verify the
+    // credential, and accepting it unverified is what this guards against.
+    return res
+      .status(503)
+      .json({ error: "Google sign-in is not configured on this server" });
+  }
+
   try {
-    credentialDecoded = jwtDecode(credential) as GoogleCredential;
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: GOOGLE_CLIENT_ID as string,
+    });
+    const payload = ticket.getPayload();
+
+    if (!payload?.email || !payload.email_verified) {
+      return res
+        .status(401)
+        .json({ error: "Google credential has no verified email" });
+    }
+
+    credentialDecoded = {
+      email: payload.email,
+      given_name: payload.given_name ?? "",
+      family_name: payload.family_name ?? "",
+    };
     req.credentialDecoded = credentialDecoded;
   } catch (err) {
-    return res.status(500).json({ error: (err as Error).message });
+    return res.status(401).json({ error: "Invalid Google credential" });
   }
 
   try {

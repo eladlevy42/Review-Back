@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const business_model_1 = __importDefault(require("./models/business.model"));
 const review_model_1 = __importDefault(require("./models/review.model"));
 const user_model_1 = require("./models/user.model");
@@ -63,7 +63,7 @@ const seedDatabase = async () => {
         ];
         const users = await Promise.all(userData.map(async (user) => ({
             ...user,
-            password: await bcrypt_1.default.hash(user.password, 10),
+            password: await bcryptjs_1.default.hash(user.password, 10),
         })));
         const createdUsers = await user_model_1.User.insertMany(users);
         // Save user passwords before hashing

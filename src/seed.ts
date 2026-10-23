@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import Business from "./models/business.model";
 import Review from "./models/review.model";
 import { User } from "./models/user.model";

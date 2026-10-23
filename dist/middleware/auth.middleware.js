@@ -8,7 +8,7 @@ exports.verifyUser = verifyUser;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const review_model_1 = __importDefault(require("../models/review.model"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret";
+const env_1 = require("../config/env");
 function verifyToken(req, res, next) {
     // Get token from header, the client should be responsible for sending the token
     const authHeader = req.header("Authorization");
@@ -20,7 +20,7 @@ function verifyToken(req, res, next) {
         return res.status(401).json({ error: "Access denied" });
     }
     try {
-        const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET); // Verify token
+        const decoded = jsonwebtoken_1.default.verify(token, env_1.JWT_SECRET); // Verify token
         req.userId = decoded.userId; // Add userId to request object
         next(); // Call next middleware
     }
